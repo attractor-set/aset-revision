@@ -25,9 +25,9 @@ PROOFS = (
         False,
     ),
     (
-        "SEED_PROJECTION",
-        FORMAL / "SeedProjectionProofs.tla",
-        "RevisionProposalPreservesSeedRecognitionBoundary",
+        "SEED_BOUNDARY",
+        FORMAL / "SeedBoundaryProofs.tla",
+        "RevisionPreservesSeedBoundary",
         True,
     ),
 )

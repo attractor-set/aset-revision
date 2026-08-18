@@ -126,7 +126,7 @@ def check_release_admission(
     expected_counts = {
         "COMPONENT_COMPOSITION": 11,
         "OPERATIONAL_RELATIONAL_PAIRING": 3,
-        "SEED_PROJECTION": 16,
+        "SEED_BOUNDARY": 16,
     }
     proof_records = tlaps.get("proofs")
     require(isinstance(proof_records, list), "TLAPS proof records missing")

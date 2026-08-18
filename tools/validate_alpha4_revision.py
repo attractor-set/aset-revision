@@ -15,7 +15,7 @@ OP = BASE / "formal/RestrictedOperationalSemantics.tla"
 PAIR = BASE / "formal/OperationalRelationalPairingProofs.tla"
 COMPOSE = BASE / "formal/ComponentCompositionProofs.tla"
 SEED_PROJECTION = BASE / "formal/SeedProjection.tla"
-SEED_PROOF = BASE / "formal/SeedProjectionProofs.tla"
+SEED_PROOF = BASE / "formal/SeedBoundaryProofs.tla"
 CAUSAL = BASE / "causal/components.petri"
 BINDING = ROOT / "upstream/ASET_SEED_ALPHA4_BINDING.aset"
 
@@ -242,6 +242,30 @@ def validate_subject() -> None:
         "subject identity mismatch",
     )
     require("SEMANTIC-PRECEDENCE NONE" in lines, "semantic precedence must be NONE")
+    seed_extension_bindings = [
+        line for line in lines if line.startswith("SEED-EXTENSION-BIND ")
+    ]
+    require(
+        seed_extension_bindings
+        == [
+            "SEED-EXTENSION-BIND OPERATIONAL OBSERVE-UNKNOWN PROPOSE-REVISION",
+            "SEED-EXTENSION-BIND RELATIONAL ObserveUnknown ProposeRevision",
+            "SEED-EXTENSION-BIND CAUSAL OBSERVE-UNKNOWN PROPOSE-REVISION",
+        ],
+        "Revision Seed extension binding surface mismatch",
+    )
+    require(
+        "SEED-PROJECTION PROPOSE-REVISION OBSERVE-UNKNOWN" in lines,
+        "Revision Seed projection mismatch",
+    )
+    require(
+        "SEED-RECOGNITION-OWNER TARGET-LOCAL-SEED" in lines,
+        "Revision Seed recognition ownership mismatch",
+    )
+    require(
+        "EFFECT-PERMITTED-BY-REVISION NEVER" in lines,
+        "Revision effect boundary mismatch",
+    )
     require(
         not any(line.startswith("COMPATIBILITY ") for line in lines),
         "subject compatibility surface must be absent",
@@ -350,7 +374,7 @@ def validate_core_surface() -> None:
         "Seed projection effect criterion must use exact pinned recognition theory",
     )
     require(
-        "RevisionProposalPreservesSeedRecognitionBoundary" in seed_proof,
+        "RevisionPreservesSeedBoundary" in seed_proof,
         "Seed boundary theorem missing",
     )
     require(
@@ -402,6 +426,7 @@ def main() -> int:
     print("ALPHA4_REVISION_SINGLE_TRANSITION=PROPOSE-REVISION")
     print("ALPHA4_REVISION_STATE_SURFACE=PROPOSALS_ONLY")
     print("ALPHA4_REVISION_SEED_PROJECTION=OBSERVE-UNKNOWN")
+    print("ALPHA4_REVISION_SEED_BOUNDARY=PASS")
     print("ALPHA4_REVISION_VALIDATION=PASS")
     return 0
 

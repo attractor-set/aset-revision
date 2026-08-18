@@ -3,6 +3,9 @@ DIGEST-ROLE BYTE_IDENTITY_AND_CACHE_ONLY
 SEMANTIC-PRECEDENCE NONE
 
 UPSTREAM-SEED upstream/ASET_SEED_ALPHA4_BINDING.aset
+SEED-EXTENSION-BIND OPERATIONAL OBSERVE-UNKNOWN PROPOSE-REVISION
+SEED-EXTENSION-BIND RELATIONAL ObserveUnknown ProposeRevision
+SEED-EXTENSION-BIND CAUSAL OBSERVE-UNKNOWN PROPOSE-REVISION
 ABSTRACT-MACHINE revision/alpha4/operational/components.forth
 FORMAL-REFLECTION revision/alpha4/formal/RestrictedOperationalSemantics.tla
 CORRECTNESS-MODEL revision/alpha4/formal/RevisionRelations.tla
@@ -10,10 +13,13 @@ CAUSAL-MODEL revision/alpha4/causal/components.petri
 
 PAIR ASET-REVISION-COMPONENT-PROPOSE-REVISION PROPOSE-REVISION ProposeRevision ProposeRevisionPairing
 CAUSAL-BIND ASET-REVISION-COMPONENT-PROPOSE-REVISION PROPOSE-REVISION
+SEED-PROJECTION PROPOSE-REVISION OBSERVE-UNKNOWN
+SEED-RECOGNITION-OWNER TARGET-LOCAL-SEED
+EFFECT-PERMITTED-BY-REVISION NEVER
 
 PROOF COMPONENT_COMPOSITION revision/alpha4/formal/ComponentCompositionProofs.tla RevisionProposalSafety
 PROOF OPERATIONAL_RELATIONAL_PAIRING revision/alpha4/formal/OperationalRelationalPairingProofs.tla OperationalRelationalPairing
-PROOF SEED_PROJECTION revision/alpha4/formal/SeedProjectionProofs.tla RevisionProposalPreservesSeedRecognitionBoundary
+PROOF SEED_BOUNDARY revision/alpha4/formal/SeedBoundaryProofs.tla RevisionPreservesSeedBoundary
 
 CHECK ASSURANCE tools/alpha4_revision_gate.py
 DERIVER PAIRED tools/alpha4_revision_paired_expression.py

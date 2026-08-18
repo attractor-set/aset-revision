@@ -29,7 +29,7 @@ SOURCE_PATHS = (
     "revision/alpha4/formal/ComponentCompositionProofs.tla",
     "revision/alpha4/formal/OperationalRelationalPairingProofs.tla",
     "revision/alpha4/formal/SeedProjection.tla",
-    "revision/alpha4/formal/SeedProjectionProofs.tla",
+    "revision/alpha4/formal/SeedBoundaryProofs.tla",
     "upstream/ASET_SEED_ALPHA4_BINDING.aset",
 )
 

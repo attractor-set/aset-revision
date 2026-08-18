@@ -58,13 +58,33 @@ def test_proposal_projects_to_seed_observation_not_recognition() -> None:
     bridge = (ROOT / "revision/alpha4/formal/SeedProjection.tla").read_text(
         encoding="utf-8"
     )
-    proof = (ROOT / "revision/alpha4/formal/SeedProjectionProofs.tla").read_text(
+    proof = (ROOT / "revision/alpha4/formal/SeedBoundaryProofs.tla").read_text(
         encoding="utf-8"
     )
 
     assert "Seed!ObserveUnknown" in bridge
     assert 'recognition |-> "UNKNOWN"' in bridge
     assert "~ProjectedSeedEffectPermitted(p)" in proof
+
+
+def test_revision_seed_boundary_contract() -> None:
+    subject = (ROOT / "revision/alpha4/REVISION.aset").read_text(encoding="utf-8")
+    proof = (ROOT / "revision/alpha4/formal/SeedBoundaryProofs.tla").read_text(
+        encoding="utf-8"
+    )
+
+    bindings = [
+        line for line in subject.splitlines() if line.startswith("SEED-EXTENSION-BIND ")
+    ]
+    assert bindings == [
+        "SEED-EXTENSION-BIND OPERATIONAL OBSERVE-UNKNOWN PROPOSE-REVISION",
+        "SEED-EXTENSION-BIND RELATIONAL ObserveUnknown ProposeRevision",
+        "SEED-EXTENSION-BIND CAUSAL OBSERVE-UNKNOWN PROPOSE-REVISION",
+    ]
+    assert "SEED-PROJECTION PROPOSE-REVISION OBSERVE-UNKNOWN" in subject
+    assert "SEED-RECOGNITION-OWNER TARGET-LOCAL-SEED" in subject
+    assert "EFFECT-PERMITTED-BY-REVISION NEVER" in subject
+    assert "RevisionPreservesSeedBoundary" in proof
 
 
 def test_paired_expression_exhaustive_bounded_surface() -> None:
