@@ -1,4 +1,4 @@
------------------- MODULE SeedProjectionProofs ------------------
+------------------ MODULE SeedBoundaryProofs ------------------
 EXTENDS SeedProjection, TLAPS
 
 THEOREM ProposalSeedStatesAreWellTyped ==
@@ -45,7 +45,7 @@ PROOF
          RecognitionTheory!EffectPermitted,
          Seed!ToTheoryRecognition, Seed!TheoryUnknown
 
-THEOREM RevisionProposalPreservesSeedRecognitionBoundary ==
+THEOREM RevisionPreservesSeedBoundary ==
   \A s, t, p : ProposeRevision(s, t, p) =>
     /\ ProposalSeedObservation(p)
     /\ ProjectedSeedRecognition(p) = "UNKNOWN"

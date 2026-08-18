@@ -16,6 +16,11 @@ ASET Revision does not own terminal recognition, grant effect
 permission, or establish a recognized revision. Every admitted
 proposal projects only to target-local Seed OBSERVE-UNKNOWN.
 
+At the Seed boundary, Revision is a recognition-conservative
+proposal-observation extension. Its operational, relational, and causal
+representations bind PROPOSE-REVISION to Seed OBSERVE-UNKNOWN; target-local
+Seed remains the recognition owner and Revision never grants effect permission.
+
 ## Structure
 
 - revision/alpha4/REVISION.aset: machine-readable composition boundary.

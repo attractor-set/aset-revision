@@ -118,9 +118,9 @@ def test_release_admission_certificate_and_public_audit_bind_exact_bytes(
             3,
         ),
         (
-            "SEED_PROJECTION",
-            "revision/alpha4/formal/SeedProjectionProofs.tla",
-            "RevisionProposalPreservesSeedRecognitionBoundary",
+            "SEED_BOUNDARY",
+            "revision/alpha4/formal/SeedBoundaryProofs.tla",
+            "RevisionPreservesSeedBoundary",
             16,
         ),
     ]

@@ -39,7 +39,7 @@ ALLOWED_ACTIVE_PATHS = set(
         "revision/alpha4/formal/RestrictedOperationalSemantics.tla",
         "revision/alpha4/formal/RevisionRelations.tla",
         "revision/alpha4/formal/SeedProjection.tla",
-        "revision/alpha4/formal/SeedProjectionProofs.tla",
+        "revision/alpha4/formal/SeedBoundaryProofs.tla",
         "revision/alpha4/operational/components.forth",
         "tests/test_alpha4_revision.py",
         "tests/test_alpha4_revision_release_profiles.py",
