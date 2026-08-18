@@ -1,0 +1,1 @@
+: PROPOSE-REVISION  ( proposals proposal -- proposals )  VALID-PROPOSAL? FRESH-PROPOSAL? APPEND-PROPOSAL ;

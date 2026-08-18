@@ -1,0 +1,108 @@
+name: ASET Revision 0.4alpha verify
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: python -m pip install -r requirements-ci.txt
+
+      - name: Materialize pinned Seed Alpha4 source and release
+        shell: bash
+        run: |
+          set -euo pipefail
+          seed_tag="seed-0.4alpha-assurance-anchor-1"
+          seed_commit="88378c0c0baff4e71d3285248cc9050c1318ceec"
+          seed_root="$RUNNER_TEMP/aset-seed"
+          seed_release_zip="$RUNNER_TEMP/ASET-Seed-0.4alpha.zip"
+          seed_profiles_zip="$RUNNER_TEMP/ASET-Seed-0.4alpha-profiles.zip"
+          seed_release_unpack="$RUNNER_TEMP/aset-seed-release"
+          seed_profiles_unpack="$RUNNER_TEMP/aset-seed-profiles"
+          git clone --depth 1 --branch "$seed_tag" \
+            https://github.com/attractor-set/aset-seed "$seed_root"
+          test "$(git -C "$seed_root" rev-parse HEAD)" = \
+            "$seed_commit"
+          curl --fail --location --retry 3             --output "$seed_release_zip"             "https://github.com/attractor-set/aset-seed/releases/download/$seed_tag/ASET-Seed-0.4alpha.zip"
+
+          curl --fail --location --retry 3             --output "$seed_profiles_zip"             "https://github.com/attractor-set/aset-seed/releases/download/$seed_tag/ASET-Seed-0.4alpha-profiles.zip"
+
+          echo "23ed1dee95b634bcc744089cfae67aebdac53883f47366d176d154b2d39f15ab  $seed_release_zip"             | sha256sum --check
+          echo "e6b45f74a56f2f6235ed2c74ae67ca0a0017e5c21574b996de7f1ce9965bdad7  $seed_profiles_zip"             | sha256sum --check
+
+          mkdir -p "$seed_release_unpack" "$seed_profiles_unpack"
+          unzip -q "$seed_release_zip" -d "$seed_release_unpack"
+          unzip -q "$seed_profiles_zip" -d "$seed_profiles_unpack"
+
+          seed_release_root="$seed_release_unpack/ASET-Seed-0.4alpha"
+          seed_profiles_root="$seed_profiles_unpack/ASET-Seed-0.4alpha-profiles"
+
+          test -f "$seed_release_root/RELEASE_MANIFEST.json"
+          test -f "$seed_profiles_root/RELEASE_PROFILE_MANIFEST.json"
+
+          echo "SEED_ALPHA4_ROOT=$seed_root" >> "$GITHUB_ENV"
+          echo "SEED_RELEASE_ROOT=$seed_release_root" >> "$GITHUB_ENV"
+          echo "SEED_PROFILES_ROOT=$seed_profiles_root" >> "$GITHUB_ENV"
+
+      - name: Download pinned TLAPM
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/tlapm-1.6.0-pre-x86_64-linux-gnu.tar.gz"
+          unpack="$RUNNER_TEMP/tlapm-unpacked"
+          curl --fail --location --retry 3 \
+            --output "$archive" \
+            https://github.com/tlaplus/tlapm/releases/download/1.6.0-pre/tlapm-1.6.0-pre-x86_64-linux-gnu.tar.gz
+          echo "bfa5e5350ac1ec7202feecad0a4a71a5bb58c16a49660448b35b6f371ba9e2f5  $archive" | sha256sum --check
+          mkdir -p "$unpack"
+          tar -xzf "$archive" -C "$unpack"
+          tlapm_bin="$(find "$unpack" -type f -path '*/bin/tlapm' -print -quit)"
+          test -n "$tlapm_bin"
+          test -x "$tlapm_bin"
+          test "$("$tlapm_bin" --version)" = "4600b24"
+          echo "TLAPM_BIN=$tlapm_bin" >> "$GITHUB_ENV"
+
+      - name: Verify ASET Revision and build deterministic release
+        run: >-
+          python -m tools.alpha4_revision_release_gate
+          --seed-root "$SEED_ALPHA4_ROOT"
+          --seed-release-root "$SEED_RELEASE_ROOT"
+          --seed-profiles-root "$SEED_PROFILES_ROOT"
+          --tlapm "$TLAPM_BIN"
+
+      - run: python -m pytest -q
+      - run: ruff format --check .
+      - run: ruff check .
+      - run: git diff --check
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: aset-revision-0.4alpha-release-evidence
+          if-no-files-found: warn
+          path: |
+            dist/ASET-Revision-0.4alpha/**
+            dist/ASET-Revision-0.4alpha.zip
+            dist/ASET-Revision-0.4alpha-profiles/**
+            dist/ASET-Revision-0.4alpha-profiles.zip
+            dist/tlaps-evidence.json
+            dist/python-expression-airgap-evidence.json
+            dist/python-sqlite-persistence-evidence.json
+            dist/release-admission-certificate.json
+            dist/public-release-audit.json

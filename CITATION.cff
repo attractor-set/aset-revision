@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use ASET Revision, cite the exact verified release."
+title: "ASET Revision"
+type: software
+abstract: "ASET Revision 0.4alpha is a minimal revision-proposal extension of ASET Seed with formally assured source semantics and external release companions."
+authors:
+  - family-names: "Prychyna"
+    given-names: "Dzmitry"
+    alias: "Attractor Set"
+version: "0.4alpha"
+license: Apache-2.0
+repository-code: "https://github.com/attractor-set/aset-revision"
